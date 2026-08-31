@@ -68,6 +68,17 @@ WEBHOOK_SECRET=<your-secret> BIND_ADDR=0.0.0.0:8080 DB_PATH=codes.db cargo run -
 curl -s -H "Authorization: Bearer <your-secret>" http://localhost:8080/codes
 ```
 
+### With Docker
+
+```bash
+cp .env.example .env      # then edit .env and set WEBHOOK_SECRET
+docker compose up -d      # builds the image and starts the server on :8080
+```
+
+The database is kept in the `webhook-data` named volume, so codes survive
+restarts and rebuilds. Stop with `docker compose down` (add `-v` to also delete
+the stored codes).
+
 ## Build from source
 
 ```bash

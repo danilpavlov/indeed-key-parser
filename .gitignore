@@ -58,3 +58,6 @@ keystore.properties
 # Local design/process docs — not tracked in the repo
 .superpowers/
 docs/
+
+# Local environment (secrets)
+.env
