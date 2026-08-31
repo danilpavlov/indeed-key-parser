@@ -44,6 +44,11 @@ The app sends to one of two targets, chosen on the settings screen:
   ```bash
   adb reverse tcp:8080 tcp:8080   # port must match the app's Port field
   ```
+  > **Caution:** loopback does not authenticate the listener. Keep `adb reverse`
+  > active whenever Direct mode is on — if the tunnel is down, any other app
+  > listening on that port on the phone would receive the code and the Bearer
+  > secret. Treat the webhook secret as rotatable, and prefer Remote mode with
+  > `https://` when you cannot guarantee the tunnel.
 - **Remote** — the server is a LAN device or a VPS the phone reaches over the
   network. The app posts to the **Webhook URL** you enter and requires an active
   connection. `http://` LAN webhooks work out of the box (cleartext is
