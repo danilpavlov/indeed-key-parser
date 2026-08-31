@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Cleartext is permitted only for the self-hosted webhook host(s): the loopback
-     used by `adb reverse` over USB, and the LAN IP of the dev machine. All other
-     traffic stays cleartext-blocked (the app's default at targetSdk 34). -->
+<!-- The webhook is self-hosted and user-configured (any LAN IP or hostname), so
+     the app cannot know it at build time. Cleartext HTTP is therefore permitted
+     for all hosts, which lets an http:// LAN webhook work on any user's network
+     without rebuilding. HTTPS webhooks still work and remain certificate-validated;
+     prefer https:// when the server has a trusted certificate. -->
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">localhost</domain>
-        <domain includeSubdomains="false">127.0.0.1</domain>
-        <domain includeSubdomains="false">192.168.1.47</domain>
-    </domain-config>
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>
