@@ -49,3 +49,8 @@ local.properties
 
 # Gradle wrapper jar must be committed despite *.jar above
 !**/gradle/wrapper/gradle-wrapper.jar
+
+# Release signing secrets — keep local, never commit
+*.jks
+*.keystore
+keystore.properties
