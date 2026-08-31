@@ -26,6 +26,6 @@ class IndeedCodeAccessibilityService : AccessibilityService() {
         val children = (0 until info.childCount).mapNotNull { i ->
             info.getChild(i)?.let { toUiNode(it) }
         }
-        return UiNode(info.text?.toString(), children)
+        return UiNode(info.text?.toString(), children, info.viewIdResourceName)
     }
 }
