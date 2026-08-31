@@ -136,8 +136,11 @@ it runs the unit tests and builds the debug APK (uploaded as a build artifact).
 On a version tag (`v*`) it additionally builds a **signed** release APK and
 attaches it to the GitHub Release for that tag.
 
-The release job needs the signing key, supplied as repository secrets (Settings
-→ Secrets and variables → Actions):
+The push/PR build needs no secrets. The signed-release job only runs on a tag,
+and if the signing secrets are not set it skips itself (the run stays green) —
+so you can ignore signing entirely and just use the debug APK artifact. To
+enable signed releases, add these repository secrets (Settings → Secrets and
+variables → Actions):
 
 | Secret | Value |
 |--------|-------|
