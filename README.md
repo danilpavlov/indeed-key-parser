@@ -202,6 +202,9 @@ active on the host, and the app's **Port** must match it.
 `http://<host>:<port>/webhook` and the **Secret** must equal the server's
 `WEBHOOK_SECRET`.
 
-**5. Trigger a send:** a code is read only when you **tap a token in Indeed Key**
-to reveal it. Tap one, then check `GET /codes` (or `/metrics`, where
+**5. Trigger a send:** a code is only visible to the reader once you **tap a
+token in Indeed Key** to reveal it. While Indeed Key stays open, the app polls
+every ~2 s and forwards the revealed code — sending each distinct code once and
+picking up TOTP rotations automatically, with no need to leave and re-open the
+app. Reveal a code, then check `GET /codes` (or `/metrics`, where
 `codes_stored_total` should increase).
