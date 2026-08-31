@@ -13,7 +13,6 @@ Indeed Key to reveal it.
 
 - `android/` — the Kotlin app (AccessibilityService reader + settings screen).
 - `server/` — the Rust webhook server (`axum` + SQLite).
-- `docs/` — design, plan, and device-verification notes.
 
 ## Install (from a release)
 

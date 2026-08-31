@@ -54,3 +54,7 @@ local.properties
 *.jks
 *.keystore
 keystore.properties
+
+# Local design/process docs — not tracked in the repo
+.superpowers/
+docs/
