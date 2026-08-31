@@ -128,3 +128,28 @@ keytool -genkeypair -v -keystore release.jks -alias indeedkeyparser \
 a private, offline backup). If the key is lost, you cannot ship updates to anyone
 who already installed the app — they would have to uninstall and reinstall a
 differently-signed build.
+
+## Continuous integration
+
+`.github/workflows/android.yml` runs on every push and pull request to `master`:
+it runs the unit tests and builds the debug APK (uploaded as a build artifact).
+On a version tag (`v*`) it additionally builds a **signed** release APK and
+attaches it to the GitHub Release for that tag.
+
+The release job needs the signing key, supplied as repository secrets (Settings
+→ Secrets and variables → Actions):
+
+| Secret | Value |
+|--------|-------|
+| `KEYSTORE_BASE64` | the keystore, base64-encoded: `base64 -w0 android/release.jks` |
+| `KEYSTORE_PASSWORD` | the store password from `keystore.properties` |
+| `KEY_ALIAS` | the key alias (e.g. `indeedkeyparser`) |
+| `KEY_PASSWORD` | the key password from `keystore.properties` |
+
+The workflow decodes the keystore and writes `keystore.properties` at build time;
+neither the key nor the passwords are stored in the repository. To cut a release,
+bump `versionCode`/`versionName` in `app/build.gradle.kts`, then push a tag:
+
+```bash
+git tag v1.1.0 && git push origin v1.1.0
+```
