@@ -169,3 +169,39 @@ bump `versionCode`/`versionName` in `app/build.gradle.kts`, then push a tag:
 ```bash
 git tag v1.1.0 && git push origin v1.1.0
 ```
+
+## Troubleshooting
+
+Codes not reaching the server (or only one old code "stuck")? Work through
+these — in practice it is almost always the phone's network or the
+accessibility service being killed, not the app or server.
+
+**1. Can the phone reach the server?**
+On the phone, open `http://<host>:<port>/health` in a browser — you want `ok`.
+If it does not load:
+- The phone and the server are not on the same network — a phone on its own
+  hotspot, on mobile data, or on a different Wi-Fi cannot reach a LAN server.
+  Put the phone on the same Wi-Fi as the server.
+- The host firewall is blocking the port, or the server bound to `127.0.0.1`
+  instead of `0.0.0.0`.
+- The server's LAN IP changed (DHCP). Reserve a static IP for it.
+
+**2. Is the accessibility service actually running?**
+It must be both enabled *and* bound; Android's power management can kill it, and
+then codes silently stop. Check with `adb shell dumpsys accessibility | grep
+"Bound services"` — it should list "Indeed Key Parser". To keep it alive:
+- **Battery:** Settings → Apps → Indeed Key Parser → Battery → **Unrestricted**.
+- **Sideloaded apps (Android 13+):** App info → ⋮ → **Allow restricted
+  settings** — until you do this the accessibility toggle may refuse to stick.
+- Then re-enable the service: Settings → Accessibility → Indeed Key Parser → on.
+
+**3. Direct (USB) mode:** the `adb reverse tcp:<port> tcp:<port>` tunnel must be
+active on the host, and the app's **Port** must match it.
+
+**4. Mode / URL / secret:** in Remote mode the **Webhook URL** must be
+`http://<host>:<port>/webhook` and the **Secret** must equal the server's
+`WEBHOOK_SECRET`.
+
+**5. Trigger a send:** a code is read only when you **tap a token in Indeed Key**
+to reveal it. Tap one, then check `GET /codes` (or `/metrics`, where
+`codes_stored_total` should increase).
