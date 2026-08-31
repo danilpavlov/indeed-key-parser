@@ -68,6 +68,14 @@ WEBHOOK_SECRET=<your-secret> BIND_ADDR=0.0.0.0:8080 DB_PATH=codes.db cargo run -
 - `POST /webhook` — stores a code. Body:
   `{"account","code","timestamp","source"}`; `Authorization: Bearer <secret>`.
 - `GET /codes` — returns recent codes (newest first); same `Bearer` auth.
+- `GET /health` — liveness probe, no auth, returns `200 ok` (used by the Docker
+  healthcheck).
+- `GET /metrics` — Prometheus counters (request outcomes, codes stored), no auth.
+  Exposes no codes or secrets.
+
+Logging uses `tracing`; set the level with `RUST_LOG` (default `info`), e.g.
+`RUST_LOG=debug`. Logs record request outcomes and the account label, never the
+code or the secret.
 
 ```bash
 curl -s -H "Authorization: Bearer <your-secret>" http://localhost:8080/codes
