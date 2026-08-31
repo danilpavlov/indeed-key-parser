@@ -1,1 +1,106 @@
 # indeed-key-parser
+
+Android app + Rust server that reads your **own** one-time codes (OTP) from the
+**Indeed Key** app (`com.indeedid.key`) on your own device and forwards each
+code — with the account/token label — to a self-hosted webhook that stores it.
+
+This is personal automation for your own codes on your own device. It is **not**
+a covert/exfiltration tool: the reader is an Android AccessibilityService that
+**you** enable by hand, and the app reads the code only after you tap a token in
+Indeed Key to reveal it.
+
+## Repository layout
+
+- `android/` — the Kotlin app (AccessibilityService reader + settings screen).
+- `server/` — the Rust webhook server (`axum` + SQLite).
+- `docs/` — design, plan, and device-verification notes.
+
+## Install (from a release)
+
+The signed APK is attached to each GitHub release — no build tools needed.
+
+1. Download `indeed-key-parser-<version>.apk` from the
+   [latest release](https://github.com/danilpavlov/indeed-key-parser/releases/latest).
+2. On the phone, allow installing from your browser/messenger:
+   **Settings → Apps → Special access → Install unknown apps**.
+3. Open the APK and install. Requires Android 8.0+ (`minSdk 26`).
+
+Then set it up:
+
+1. **Run the server** (see below) on a host the phone can reach, with a
+   `WEBHOOK_SECRET`.
+2. Open the app, enter your **Webhook URL** and **Secret**, tap **Save**.
+   - `http://` LAN webhooks work out of the box (cleartext is permitted).
+   - `https://` also works and stays certificate-validated — prefer it when the
+     server has a trusted certificate.
+3. Tap **Enable accessibility** and turn the service on for "Indeed Key Parser".
+4. Open Indeed Key and tap a token to reveal its code — it is forwarded to your
+   server. Read them back with `GET /codes`.
+
+Verify a download against the `SHA-256` printed in the release notes. All
+releases are signed with the same certificate (`CN=Indeed Key Parser`).
+
+## Run the server
+
+```bash
+cd server
+WEBHOOK_SECRET=<your-secret> BIND_ADDR=0.0.0.0:8080 DB_PATH=codes.db cargo run --release
+```
+
+- `POST /webhook` — stores a code. Body:
+  `{"account","code","timestamp","source"}`; `Authorization: Bearer <secret>`.
+- `GET /codes` — returns recent codes (newest first); same `Bearer` auth.
+
+```bash
+curl -s -H "Authorization: Bearer <your-secret>" http://localhost:8080/codes
+```
+
+## Build from source
+
+```bash
+# Server
+cd server && cargo test && cargo build --release
+
+# App
+cd android
+echo "sdk.dir=$HOME/Android/Sdk" > local.properties   # adjust to your SDK path
+./gradlew :app:testDebugUnitTest        # unit tests
+./gradlew :app:assembleDebug            # debug APK (debug-signed)
+./gradlew :app:assembleRelease          # release APK (see signing below)
+```
+
+## Signing key
+
+Release APKs are signed with a keystore that is **not** in this repository.
+Android requires every update to an installed app to be signed with the **same**
+key, so this keystore must be preserved for the life of the app.
+
+- The keystore (`android/release.jks`) and its passwords
+  (`android/keystore.properties`) are kept local and are git-ignored — they must
+  never be committed.
+- `app/build.gradle.kts` reads `keystore.properties` at build time. When the
+  file is absent (e.g. a fresh clone or CI without the secrets),
+  `assembleRelease` produces an **unsigned** APK instead of failing.
+
+`keystore.properties` format:
+
+```properties
+storeFile=release.jks
+storePassword=<store password>
+keyAlias=<alias>
+keyPassword=<key password>
+```
+
+To create a fresh keystore (only for a brand-new app identity — a new key cannot
+update apps installed with the old one):
+
+```bash
+cd android
+keytool -genkeypair -v -keystore release.jks -alias indeedkeyparser \
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+
+**Back up `release.jks` and its passwords** somewhere safe (a password manager or
+a private, offline backup). If the key is lost, you cannot ship updates to anyone
+who already installed the app — they would have to uninstall and reinstall a
+differently-signed build.
