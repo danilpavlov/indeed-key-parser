@@ -18,8 +18,8 @@ Indeed Key to reveal it.
 
 The signed APK is attached to each GitHub release — no build tools needed.
 
-1. Download `indeed-key-parser-v1.1.0.apk` from the
-   [v1.1.0 release](https://github.com/danilpavlov/indeed-key-parser/releases/tag/v1.1.0).
+1. Download `indeed-key-parser-v1.2.0.apk` from the
+   [v1.2.0 release](https://github.com/danilpavlov/indeed-key-parser/releases/tag/v1.2.0).
 2. On the phone, allow installing from your browser/messenger:
    **Settings → Apps → Special access → Install unknown apps**.
 3. Open the APK and install. Requires Android 8.0+ (`minSdk 26`).
