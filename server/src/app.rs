@@ -69,7 +69,7 @@ async fn post_webhook(
                 st.metrics.codes_stored.fetch_add(1, Ordering::Relaxed);
                 tracing::info!(account = %rec.account, "stored code");
             } else {
-                tracing::info!(account = %rec.account, "duplicate code ignored");
+                tracing::info!(account = %rec.account, "ignored stale code");
             }
             StatusCode::OK
         }
