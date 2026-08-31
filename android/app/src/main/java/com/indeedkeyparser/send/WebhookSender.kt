@@ -34,8 +34,12 @@ object WebhookSender {
             "code" to entry.code,
             "timestamp" to Instant.now().toString(),
         )
+        // DIRECT mode posts over loopback (adb reverse) and needs no network, so
+        // requiring one would stall delivery on a phone with no connection.
+        val networkType =
+            if (Settings(context).requiresNetwork) NetworkType.CONNECTED else NetworkType.NOT_REQUIRED
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiredNetworkType(networkType)
             .build()
         val req = OneTimeWorkRequestBuilder<SendCodeWorker>()
             .setInputData(data)
@@ -49,7 +53,7 @@ object WebhookSender {
 class SendCodeWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
     override fun doWork(): Result {
         val settings = Settings(applicationContext)
-        val url = settings.webhookUrl
+        val url = settings.resolvedUrl
         if (url.isEmpty()) return Result.failure()
         val entry = Entry(
             inputData.getString("account")!!,

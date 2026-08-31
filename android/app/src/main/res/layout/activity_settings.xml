@@ -1,50 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Webhook URL"
-        android:paddingTop="8dp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <EditText
-        android:id="@+id/webhookUrl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="https://host:8080/webhook"
-        android:inputType="textUri"
-        android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mode"
+            android:paddingTop="8dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Secret"
-        android:paddingTop="16dp" />
+        <RadioGroup
+            android:id="@+id/modeGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/secret"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Bearer secret"
-        android:inputType="textPassword"
-        android:autofillHints="" />
+            <RadioButton
+                android:id="@+id/modeDirect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Direct (USB) — phone plugged into the server host" />
 
-    <Button
-        android:id="@+id/save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Save" />
+            <RadioButton
+                android:id="@+id/modeRemote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Remote — LAN device or VPS" />
+        </RadioGroup>
 
-    <Button
-        android:id="@+id/enableAccessibility"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Enable accessibility" />
+        <LinearLayout
+            android:id="@+id/directBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Port (must match `adb reverse tcp:PORT` on the host)"
+                android:paddingTop="16dp" />
+
+            <EditText
+                android:id="@+id/directPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="8080"
+                android:inputType="number"
+                android:autofillHints="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/remoteBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Webhook URL"
+                android:paddingTop="16dp" />
+
+            <EditText
+                android:id="@+id/webhookUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="https://host:8080/webhook"
+                android:inputType="textUri"
+                android:autofillHints="" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Secret"
+            android:paddingTop="16dp" />
+
+        <EditText
+            android:id="@+id/secret"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Bearer secret"
+            android:inputType="textPassword"
+            android:autofillHints="" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Save" />
+
+        <Button
+            android:id="@+id/enableAccessibility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Enable accessibility" />
+
+    </LinearLayout>
+</ScrollView>
