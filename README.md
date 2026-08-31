@@ -27,15 +27,29 @@ The signed APK is attached to each GitHub release — no build tools needed.
 
 Then set it up:
 
-1. **Run the server** (see below) on a host the phone can reach, with a
-   `WEBHOOK_SECRET`.
-2. Open the app, enter your **Webhook URL** and **Secret**, tap **Save**.
-   - `http://` LAN webhooks work out of the box (cleartext is permitted).
-   - `https://` also works and stays certificate-validated — prefer it when the
-     server has a trusted certificate.
+1. **Run the server** (see below) with a `WEBHOOK_SECRET`.
+2. Open the app, pick a **Mode** (see below), fill in its field(s) and the
+   **Secret**, tap **Save**.
 3. Tap **Enable accessibility** and turn the service on for "Indeed Key Parser".
 4. Open Indeed Key and tap a token to reveal its code — it is forwarded to your
    server. Read them back with `GET /codes`.
+
+### Modes
+
+The app sends to one of two targets, chosen on the settings screen:
+
+- **Direct (USB)** — the phone is plugged into the machine running the server.
+  The app posts to `http://localhost:<port>`, tunnelled to the host over USB, so
+  no phone network is needed (delivery does not wait for a connection). On the
+  host, forward the port once per connection:
+  ```bash
+  adb reverse tcp:8080 tcp:8080   # port must match the app's Port field
+  ```
+- **Remote** — the server is a LAN device or a VPS the phone reaches over the
+  network. The app posts to the **Webhook URL** you enter and requires an active
+  connection. `http://` LAN webhooks work out of the box (cleartext is
+  permitted); `https://` also works and stays certificate-validated — prefer it
+  when the server has a trusted certificate.
 
 Verify a download against the `SHA-256` printed in the release notes. All
 releases are signed with the same certificate (`CN=Indeed Key Parser`).
