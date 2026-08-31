@@ -8,7 +8,11 @@ COPY src ./src
 RUN cargo build --release --bin indeed-key-webhook
 
 FROM debian:bookworm-slim
-RUN useradd --system --uid 10001 app \
+# curl is used by the compose healthcheck against /health.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 10001 app \
     && mkdir -p /data \
     && chown app /data
 COPY --from=builder /app/target/release/indeed-key-webhook /usr/local/bin/indeed-key-webhook

@@ -13,6 +13,12 @@ services:
       DB_PATH: /data/codes.db
     volumes:
       - webhook-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
 volumes:
   webhook-data:
