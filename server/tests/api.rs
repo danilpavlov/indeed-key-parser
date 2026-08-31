@@ -11,6 +11,7 @@ async fn state() -> app::AppState {
     app::AppState {
         pool,
         secret: "s3cr3t".into(),
+        metrics: std::sync::Arc::new(indeed_key_webhook::metrics::Metrics::default()),
     }
 }
 
@@ -75,4 +76,35 @@ async fn get_codes_requires_auth_and_returns_json() {
     assert_eq!(r.status(), StatusCode::OK);
     let body = r.into_body().collect().await.unwrap().to_bytes();
     assert!(String::from_utf8_lossy(&body).contains("123456"));
+}
+
+#[tokio::test]
+async fn health_is_open_and_ok() {
+    let req = Request::builder()
+        .uri("/health")
+        .body(Body::empty())
+        .unwrap();
+    let r = app::router(state().await).oneshot(req).await.unwrap();
+    assert_eq!(r.status(), StatusCode::OK);
+    let body = r.into_body().collect().await.unwrap().to_bytes();
+    assert_eq!(&body[..], b"ok");
+}
+
+#[tokio::test]
+async fn metrics_is_open_and_counts_a_stored_code() {
+    let st = state().await;
+    app::router(st.clone())
+        .oneshot(post(Some("s3cr3t"), VALID))
+        .await
+        .unwrap();
+    let req = Request::builder()
+        .uri("/metrics")
+        .body(Body::empty())
+        .unwrap();
+    let r = app::router(st).oneshot(req).await.unwrap();
+    assert_eq!(r.status(), StatusCode::OK);
+    let body = r.into_body().collect().await.unwrap().to_bytes();
+    let text = String::from_utf8_lossy(&body);
+    assert!(text.contains("webhook_requests_total{outcome=\"ok\"} 1"), "{text}");
+    assert!(text.contains("codes_stored_total 1"), "{text}");
 }
