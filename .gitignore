@@ -25,3 +25,27 @@ replay_pid*
 
 # Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
 .kotlin/
+# --- Rust (server) ---
+/server/target/
+/server/**/*.db
+/server/**/*.db-*
+
+# --- Android / Gradle ---
+.gradle/
+build/
+/android/local.properties
+/android/.gradle/
+/android/build/
+/android/app/build/
+*.apk
+*.ap_
+*.dex
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Gradle wrapper jar must be committed despite *.jar above
+!**/gradle/wrapper/gradle-wrapper.jar
