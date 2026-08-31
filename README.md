@@ -67,7 +67,8 @@ WEBHOOK_SECRET=<your-secret> BIND_ADDR=0.0.0.0:8080 DB_PATH=codes.db cargo run -
 
 - `POST /webhook` — stores a code. Body:
   `{"account","code","timestamp","source"}`; `Authorization: Bearer <secret>`.
-- `GET /codes` — returns recent codes (newest first); same `Bearer` auth.
+- `GET /codes` — returns the latest code for each account (newest-updated
+  first); same `Bearer` auth. Only the freshest code per account is kept.
 - `GET /health` — liveness probe, no auth, returns `200 ok` (used by the Docker
   healthcheck).
 - `GET /metrics` — Prometheus counters (request outcomes, codes stored), no auth.
